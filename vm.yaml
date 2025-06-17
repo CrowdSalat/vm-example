@@ -1,0 +1,51 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: centos-stream10-vm2
+  namespace: poc-example
+spec:
+  dataVolumeTemplates:
+    - metadata:
+        name: centos-stream10-vm2-volume
+      spec:
+        sourceRef:
+          kind: DataSource
+          name: centos-stream10
+          namespace: openshift-virtualization-os-images
+        storage:
+          storageClassName: hostpath-csi
+  instancetype:
+    name: u1.medium
+  preference:
+    name: centos.stream10
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        network.kubevirt.io/headlessService: headless
+    spec:
+      domain:
+        devices:
+        # If true, KubeVirt will not automatically attach the default pod network interface.
+          autoattachPodInterface: false
+          # Defines a virtual network interface.
+          interfaces:
+            - masquerade: {}
+              name: default
+      networks:
+        - name: default
+          pod: {}
+      subdomain: headless
+      volumes:
+        - dataVolume:
+            name: centos-stream10-vm2-volume
+          name: rootdisk
+        - cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              chpasswd:
+                expire: false
+              password: csgm-466i-akta
+              user: centos
+              runcmd: []
+          name: cloudinitdisk
