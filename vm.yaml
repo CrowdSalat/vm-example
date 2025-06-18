@@ -1,19 +1,22 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: centos-stream10-vm2
-  namespace: poc-examples
+  name: centos-stream10-aqua-mollusk-27
+  namespace: openshift-gitops
 spec:
   dataVolumeTemplates:
     - metadata:
-        name: centos-stream10-vm2-volume
+        name: centos-stream10-aqua-mollusk-27-volume
       spec:
         sourceRef:
           kind: DataSource
           name: centos-stream10
           namespace: openshift-virtualization-os-images
         storage:
-          storageClassName: hostpath-csi
+          resources:
+            requests:
+              storage: '34087042032'
+          storageClassName: hostpath
   instancetype:
     name: u1.medium
   preference:
@@ -26,9 +29,8 @@ spec:
     spec:
       domain:
         devices:
-        # If true, KubeVirt will not automatically attach the default pod network interface.
           autoattachPodInterface: false
-          # Defines a virtual network interface.
+          disks: []
           interfaces:
             - masquerade: {}
               name: default
@@ -38,14 +40,13 @@ spec:
       subdomain: headless
       volumes:
         - dataVolume:
-            name: centos-stream10-vm2-volume
+            name: centos-stream10-aqua-mollusk-27-volume
           name: rootdisk
         - cloudInitNoCloud:
             userData: |
               #cloud-config
               chpasswd:
                 expire: false
-              password: csgm-466i-akta
+              password: fu4u-e7r1-idun
               user: centos
-              runcmd: []
           name: cloudinitdisk
